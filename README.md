@@ -35,7 +35,7 @@ Clone repositori ini dan letakkan di direktori `/opt`:
 
 ```
 git clone https://github.com/frizanwr/anycast-resolver.git
-sudo cp -r anycast-resolver /opt/
+sudo mv anycast-resolver /opt/
 sudo chmod +x /opt/anycast-resolver/bin/*
 sudo chmod +x /opt/anycast-resolver/scripts/*
 ```
