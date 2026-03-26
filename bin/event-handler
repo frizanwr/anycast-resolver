@@ -15,15 +15,15 @@ fi
 case "$NEW_STATE" in
     "UP")
         eval "$ON_UP"
-        /usr/bin/logger -t "$LOG_TAG" "STATE UP: Cache Flushed & Route Announced"
+        /usr/bin/logger -t "$LOG_TAG" "$LOG_UP"
         ;;
     "DOWN")
         eval "$ON_DOWN"
-        /usr/bin/logger -t "$LOG_TAG" "STATE DOWN: Healthcheck Failed & Cache Flushed"
+        /usr/bin/logger -t "$LOG_TAG" "$LOG_DOWN"
         ;;
     "DISABLED")
         eval "$ON_DISABLED"
-        /usr/bin/logger -t "$LOG_TAG" "STATE DISABLED: Manual Maintenance Mode Active & Cache Flushed"
+        /usr/bin/logger -t "$LOG_TAG" "$LOG_DISABLED"
         ;;
     *)
         /usr/bin/logger -t "$LOG_TAG" "STATE UNKNOWN: Received invalid argument '$NEW_STATE'"
