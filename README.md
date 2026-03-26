@@ -26,7 +26,7 @@ Pastikan perangkat Anda sudah terinstal paket berikut:
 
 ```
 sudo apt update
-sudo apt install exabgp dnsutils -y
+sudo apt install git exabgp dnsutils -y
 ```
 
 ### 2\. Penempatan File
