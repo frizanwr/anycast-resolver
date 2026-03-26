@@ -17,7 +17,7 @@ check_dns_health() {
     local exit_status
 
     # Eksekusi kueri
-    dig_output=$(/usr/bin/dig +timeout=${CHECK_TIMEOUT} +tries=${CHECK_TRIES} -4 "${full_query}" @"${LISTEN_IP}" +identify 2>/dev/null)
+    dig_output=$(/usr/bin/dig +timeout=${CHECK_TIMEOUT} +tries=${CHECK_TRIES} -4 "${full_query}" @"${RESOLVER_IP}" +identify 2>/dev/null)
     exit_status=$?
 
     # Validasi rcode NOERROR (status: 0) atau NXDOMAIN (status: 3)
