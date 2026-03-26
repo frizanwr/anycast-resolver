@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Load configuration
+CONF_FILE="/opt/anycast-resolver/anycast.conf"
+if [[ -f "$CONF_FILE" ]]; then
+    source "$CONF_FILE"
+else
+    echo "Config file not found!"
+    exit 1
+fi
+
+check_dns_health() {
+    local target_domain=$1
+    local random_prefix=$(head /dev/urandom | tr -dc a-z0-9 | head -c 6)
+    local full_query="${random_prefix}.${target_domain}"
+    local dig_output
+    local exit_status
+
+    # Eksekusi kueri
+    dig_output=$(/usr/bin/dig +timeout=${CHECK_TIMEOUT} +tries=${CHECK_TRIES} -4 "${full_query}" @"${LISTEN_IP}" +identify 2>/dev/null)
+    exit_status=$?
+
+    # Validasi rcode NOERROR (status: 0) atau NXDOMAIN (status: 3)
+    if [[ $exit_status -eq 0 ]] && [[ "$dig_output" == *"status: NOERROR"* || "$dig_output" == *"status: NXDOMAIN"* ]]; then
+        return 0 
+    else
+        return 1
+    fi
+}
+
+# --- MAIN EXECUTION ---
+SUCCESS_COUNT=0
+PIDS=()
+
+for domain in "${CHECK_DOMAINS[@]}"; do
+    check_dns_health "$domain" &
+    PIDS+=($!)
+done
+
+for pid in "${PIDS[@]}"; do
+    if wait "$pid"; then
+        ((SUCCESS_COUNT++))
+    fi
+done
+
+# Final Evaluation
+if [ "$SUCCESS_COUNT" -ge "$CHECK_THRESHOLD" ]; then
+    exit 0
+else
+    exit 1
+fi

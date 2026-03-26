@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Input status (UP, DOWN, or DISABLED)
+NEW_STATE=$1
+
+# Load configuration
+CONF_FILE="/opt/anycast-resolver/anycast.conf"
+if [[ -f "$CONF_FILE" ]]; then
+    source "$CONF_FILE"
+else
+    /usr/bin/logger -t "anycast-event-err" "Critical: Config file missing!"
+    exit 1
+fi
+
+case "$NEW_STATE" in
+    "UP")
+        eval "$ON_UP"
+        /usr/bin/logger -t "$LOG_TAG" "STATE UP: Cache Flushed & Route Announced"
+        ;;
+    "DOWN")
+        eval "$ON_DOWN"
+        /usr/bin/logger -t "$LOG_TAG" "STATE DOWN: Healthcheck Failed & Cache Flushed"
+        ;;
+    "DISABLED")
+        eval "$ON_DISABLED"
+        /usr/bin/logger -t "$LOG_TAG" "STATE DISABLED: Manual Maintenance Mode Active & Cache Flushed"
+        ;;
+    *)
+        /usr/bin/logger -t "$LOG_TAG" "STATE UNKNOWN: Received invalid argument '$NEW_STATE'"
+        ;;
+esac
